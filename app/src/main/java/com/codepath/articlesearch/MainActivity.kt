@@ -79,10 +79,21 @@ class MainActivity : AppCompatActivity() {
                     )
                     // TODO: Do something with the returned json (contains article information)
                     parsedJson.response?.docs?.let { list ->
-                        articles.addAll(list)
+                        //Delete everything previously in the database
+                        (application as ArticleApplication).db.articleDao().deleteAll()
 
-                        // Reload the screen
-                        articleAdapter.notifyDataSetChanged()
+                        //Insert the new data into the database
+                        (application as ArticleApplication).db.articleDao().insertAll(list.map {
+                            //Parse the data
+                            // Map our API Article data type to an ArticleEntity type
+                            // Clear out the existing cache.
+                            ArticleEntity(
+                                headline = it.headline?.main,
+                                articleAbstract = it.abstract,
+                                byline = it.byline?.original,
+                                mediaImageUrl = it.mediaImageUrl
+                            )
+                        })
                     }
 
                     // TODO: Save the articles and reload the screen
