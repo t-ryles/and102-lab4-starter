@@ -43,8 +43,10 @@ class MainActivity : AppCompatActivity() {
             articlesRecyclerView.addItemDecoration(dividerItemDecoration)
         }
 
+        //Using the AsyncHTTPClient to request the data from the search API.
         val client = AsyncHttpClient()
         client.get(ARTICLE_SEARCH_URL, object : JsonHttpResponseHandler() {
+            //In case the request fails, we'll be logging the error.
             override fun onFailure(
                 statusCode: Int,
                 headers: Headers?,
@@ -54,6 +56,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, "Failed to fetch articles: $statusCode")
             }
 
+            //If it's successful, we'll need to parse through the JSON data that we get back to get the articles.
             override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
                 Log.i(TAG, "Successfully fetched articles: $json")
                 try {

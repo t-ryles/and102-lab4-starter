@@ -1,7 +1,6 @@
 package com.codepath.articlesearch
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import com.bumptech.glide.Glide
 const val ARTICLE_EXTRA = "ARTICLE_EXTRA"
 private const val TAG = "ArticleAdapter"
 
-class ArticleAdapter(private val context: Context) :
+class ArticleAdapter(private val context: Context, private val articles: List<Article>) :
     RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -23,9 +22,14 @@ class ArticleAdapter(private val context: Context) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // TODO: Get the individual article and bind to holder
+        //Getting individual article from list of articles and
+        //set the UI with the bind method
+        val article = articles[position]
+        holder.bind(article)
     }
 
-    override fun getItemCount() = 0
+    // Using the length of the article list
+    override fun getItemCount() = articles.size
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnClickListener {
@@ -39,6 +43,17 @@ class ArticleAdapter(private val context: Context) :
         }
 
         // TODO: Write a helper method to help set up the onBindViewHolder method
+        // Pulling the data from the article.kt and putting in
+        // the respective views via variable from ViewHolder
+        fun bind(article: Article) {
+            titleTextView.text = article.headline?.main
+            abstractTextView.text = article.abstract
+
+            //Setting the image with the Glide library help
+            Glide.with(context)
+                .load(article.mediaImageUrl)
+                .into(mediaImageView)
+        }
 
         override fun onClick(v: View?) {
             // TODO: Get selected article
