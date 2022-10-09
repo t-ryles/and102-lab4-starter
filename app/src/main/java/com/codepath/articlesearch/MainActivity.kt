@@ -28,6 +28,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var articlesRecyclerView: RecyclerView
     private lateinit var binding: ActivityMainBinding
 
+    //Fetching article from the server
+    private val articles = mutableListOf<Article>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,6 +40,9 @@ class MainActivity : AppCompatActivity() {
 
         articlesRecyclerView = findViewById(R.id.articles)
         // TODO: Set up ArticleAdapter with articles
+
+        val articleAdapter = ArticleAdapter(this, articles)
+        articlesRecyclerView.adapter = articleAdapter
 
         articlesRecyclerView.layoutManager = LinearLayoutManager(this).also {
             val dividerItemDecoration = DividerItemDecoration(this, it.orientation)
@@ -56,13 +62,28 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, "Failed to fetch articles: $statusCode")
             }
 
-            //If it's successful, we'll need to parse through the JSON data that we get back to get the articles.
+            //If it's successful, we'll need to parse through the JSON data
+            // that we get back to get the articles.
             override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
                 Log.i(TAG, "Successfully fetched articles: $json")
                 try {
                     // TODO: Create the parsedJSON
-
+                    // Decode the JSON with the help of createJSON() method
+                    // Decoding is where serialization occurs and
+                    // converts the JSON data into models
+                    val parsedJson = createJson().decodeFromString(
+                        //Serialization library helps us to take the information and
+                        // convert it into Kotlin object
+                        SearchNewsResponse.serializer(),
+                        json.jsonObject.toString()
+                    )
                     // TODO: Do something with the returned json (contains article information)
+                    parsedJson.response?.docs?.let { list ->
+                        articles.addAll(list)
+
+                        // Reload the screen
+                        articleAdapter.notifyDataSetChanged()
+                    }
 
                     // TODO: Save the articles and reload the screen
 
