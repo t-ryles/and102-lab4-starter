@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     //Fetching article from the server
-    private val articles = mutableListOf<Article>()
+    private val articles = mutableListOf<DisplayArticle>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -25,16 +25,16 @@ class DetailActivity : AppCompatActivity() {
         abstractTextView = findViewById(R.id.mediaAbstract)
 
         // TODO: Get the extra from the Intent
-        val article = intent.getSerializableExtra(ARTICLE_EXTRA) as Article
+        val displayArticle = intent.getSerializableExtra(ARTICLE_EXTRA) as Article
 
         // TODO: Set the title, byline, and abstract information from the article
-        titleTextView.text = article.headline?.main
-        bylineTextView.text = article.byline?.original
-        abstractTextView.text = article.abstract
+        titleTextView.text = displayArticle.headline?.main
+        bylineTextView.text = displayArticle.byline?.original
+        abstractTextView.text = displayArticle.abstract
 
         // TODO: Load the media image
         Glide.with(this)
-            .load(article.mediaImageUrl)
+            .load(displayArticle.mediaImageUrl)
             .into(mediaImageView)
     }
 }
