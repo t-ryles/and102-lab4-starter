@@ -3,12 +3,15 @@ package com.codepath.articlesearch
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.codepath.articlesearch.databinding.ActivityMainBinding
 import com.codepath.asynchttpclient.AsyncHttpClient
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.Headers
 import org.json.JSONException
@@ -79,21 +82,25 @@ class MainActivity : AppCompatActivity() {
                     )
                     // TODO: Do something with the returned json (contains article information)
                     parsedJson.response?.docs?.let { list ->
-                        //Delete everything previously in the database
-                        (application as ArticleApplication).db.articleDao().deleteAll()
+                        // articleDao running on another thread
+                        lifecycleScope.launch(IO) {
 
-                        //Insert the new data into the database
-                        (application as ArticleApplication).db.articleDao().insertAll(list.map {
-                            //Parse the data
-                            // Map our API Article data type to an ArticleEntity type
-                            // Clear out the existing cache.
-                            ArticleEntity(
-                                headline = it.headline?.main,
-                                articleAbstract = it.abstract,
-                                byline = it.byline?.original,
-                                mediaImageUrl = it.mediaImageUrl
-                            )
-                        })
+                            //Delete everything previously in the database
+                            (application as ArticleApplication).db.articleDao().deleteAll()
+
+                            //Insert the new data into the database
+                            (application as ArticleApplication).db.articleDao().insertAll(list.map {
+                                //Parse the data
+                                // Map our API Article data type to an ArticleEntity type
+                                // Clear out the existing cache.
+                                ArticleEntity(
+                                    headline = it.headline?.main,
+                                    articleAbstract = it.abstract,
+                                    byline = it.byline?.original,
+                                    mediaImageUrl = it.mediaImageUrl
+                                )
+                            })
+                        }
                     }
 
                     // TODO: Save the articles and reload the screen
